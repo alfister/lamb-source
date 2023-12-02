@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 
 const faces = {
-	'Coding Cat': 'https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif',
-	'Compiling Cat': 'https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif',
-	'Testing Cat': 'https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif'
+	'ramsay pleased': 'https://media.giphy.com/media/1pA2TskF33668iVDaW/giphy.gif',
+	'ramsay annoyed': 'https://media.giphy.com/media/xT9DPJVjlYHwWsZRxm/giphy.gif',
+	'ramsay angry': 'https://media.giphy.com/media/l3V0gnmiNvCNz85Wg/giphy.gif'
 };
 
 export function activate(context: vscode.ExtensionContext) {
@@ -140,16 +140,16 @@ class LambSourcePanel {
 		// We can vary the roaster here
 		switch (this._panel.viewColumn) {
 			case vscode.ViewColumn.Two:
-				this._updateForFace(webview, 'Compiling Cat');
+				this._updateForFace(webview, 'ramsay pleased');
 				return;
 
 			case vscode.ViewColumn.Three:
-				this._updateForFace(webview, 'Testing Cat');
+				this._updateForFace(webview, 'ramsay annoyed');
 				return;
 
 			case vscode.ViewColumn.One:
 			default:
-				this._updateForFace(webview, 'Coding Cat');
+				this._updateForFace(webview, 'ramsay angry');
 				return;
 		}
 	}
@@ -159,7 +159,7 @@ class LambSourcePanel {
 		this._panel.webview.html = this._getHtmlForWebview(webview, faces[faceName]);
 	}
 
-	private _getHtmlForWebview(webview: vscode.Webview, catGifPath: string) {
+	private _getHtmlForWebview(webview: vscode.Webview, facePath: string) {
 		// Local path to main script run in the webview
 		const scriptPathOnDisk = vscode.Uri.joinPath(this._extensionUri, 'media', 'main.js');
 
@@ -193,10 +193,10 @@ class LambSourcePanel {
 				<link href="${stylesResetUri}" rel="stylesheet">
 				<link href="${stylesMainUri}" rel="stylesheet">
 
-				<title>Cat Coding</title>
+				<title>Lamb Source</title>
 			</head>
 			<body>
-				<img src="${catGifPath}" width="300" />
+				<img src="${facePath}" width="300" />
 				<h1 id="lines-of-code-counter">0</h1>
 
 				<script nonce="${nonce}" src="${scriptUri}"></script>
