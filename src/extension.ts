@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-const cats = {
+const faces = {
 	'Coding Cat': 'https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif',
 	'Compiling Cat': 'https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif',
 	'Testing Cat': 'https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif'
@@ -8,27 +8,19 @@ const cats = {
 
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
-		vscode.commands.registerCommand('catCoding.start', () => {
-			CatCodingPanel.createOrShow(context.extensionUri);
-		})
-	);
-
-	context.subscriptions.push(
-		vscode.commands.registerCommand('catCoding.doRefactor', () => {
-			if (CatCodingPanel.currentPanel) {
-				CatCodingPanel.currentPanel.doRefactor();
-			}
+		vscode.commands.registerCommand('lambSource.start', () => {
+			LambSourcePanel.createOrShow(context.extensionUri);
 		})
 	);
 
 	if (vscode.window.registerWebviewPanelSerializer) {
 		// Make sure we register a serializer in activation event
-		vscode.window.registerWebviewPanelSerializer(CatCodingPanel.viewType, {
+		vscode.window.registerWebviewPanelSerializer(LambSourcePanel.viewType, {
 			async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
 				console.log(`Got state: ${state}`);
 				// Reset the webview options so we use latest uri for `localResourceRoots`.
 				webviewPanel.webview.options = getWebviewOptions(context.extensionUri);
-				CatCodingPanel.revive(webviewPanel, context.extensionUri);
+				LambSourcePanel.revive(webviewPanel, context.extensionUri);
 			}
 		});
 	}
@@ -45,15 +37,15 @@ function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
 }
 
 /**
- * Manages cat coding webview panels
+ * Manages lamb source webview panels
  */
-class CatCodingPanel {
+class LambSourcePanel {
 	/**
 	 * Track the currently panel. Only allow a single panel to exist at a time.
 	 */
-	public static currentPanel: CatCodingPanel | undefined;
+	public static currentPanel: LambSourcePanel | undefined;
 
-	public static readonly viewType = 'catCoding';
+	public static readonly viewType = 'lambSource';
 
 	private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionUri: vscode.Uri;
@@ -65,24 +57,24 @@ class CatCodingPanel {
 			: undefined;
 
 		// If we already have a panel, show it.
-		if (CatCodingPanel.currentPanel) {
-			CatCodingPanel.currentPanel._panel.reveal(column);
+		if (LambSourcePanel.currentPanel) {
+			LambSourcePanel.currentPanel._panel.reveal(column);
 			return;
 		}
 
 		// Otherwise, create a new panel.
 		const panel = vscode.window.createWebviewPanel(
-			CatCodingPanel.viewType,
-			'Cat Coding',
+			LambSourcePanel.viewType,
+			'Lamb Source',
 			column || vscode.ViewColumn.One,
 			getWebviewOptions(extensionUri),
 		);
 
-		CatCodingPanel.currentPanel = new CatCodingPanel(panel, extensionUri);
+		LambSourcePanel.currentPanel = new LambSourcePanel(panel, extensionUri);
 	}
-
+	
 	public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-		CatCodingPanel.currentPanel = new CatCodingPanel(panel, extensionUri);
+		LambSourcePanel.currentPanel = new LambSourcePanel(panel, extensionUri);
 	}
 
 	private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
@@ -128,7 +120,7 @@ class CatCodingPanel {
 	}
 
 	public dispose() {
-		CatCodingPanel.currentPanel = undefined;
+		LambSourcePanel.currentPanel = undefined;
 
 		// Clean up our resources
 		this._panel.dispose();
@@ -145,25 +137,26 @@ class CatCodingPanel {
 		const webview = this._panel.webview;
 
 		// Vary the webview's content based on where it is located in the editor.
+		// We can vary the roaster here
 		switch (this._panel.viewColumn) {
 			case vscode.ViewColumn.Two:
-				this._updateForCat(webview, 'Compiling Cat');
+				this._updateForFace(webview, 'Compiling Cat');
 				return;
 
 			case vscode.ViewColumn.Three:
-				this._updateForCat(webview, 'Testing Cat');
+				this._updateForFace(webview, 'Testing Cat');
 				return;
 
 			case vscode.ViewColumn.One:
 			default:
-				this._updateForCat(webview, 'Coding Cat');
+				this._updateForFace(webview, 'Coding Cat');
 				return;
 		}
 	}
 
-	private _updateForCat(webview: vscode.Webview, catName: keyof typeof cats) {
-		this._panel.title = catName;
-		this._panel.webview.html = this._getHtmlForWebview(webview, cats[catName]);
+	private _updateForFace(webview: vscode.Webview, faceName: keyof typeof faces) {
+		this._panel.title = faceName;
+		this._panel.webview.html = this._getHtmlForWebview(webview, faces[faceName]);
 	}
 
 	private _getHtmlForWebview(webview: vscode.Webview, catGifPath: string) {
