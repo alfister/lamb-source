@@ -29,7 +29,8 @@
     "keybindings": [
       {
         "command": "lambSource.submit",
-        "key": "enter"
+        "key": "enter",
+        "when": "editorTextFocus"
       }
     ]
   },

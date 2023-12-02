@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import OpenAI from 'openai';
 require('dotenv').config();
 import fetch from 'node-fetch';
+import { Blob } from 'node:buffer';
 
 const faces = {
   'ramsay pleased': 'https://media.giphy.com/media/1pA2TskF33668iVDaW/giphy.gif',
@@ -22,10 +23,10 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('lambSource.submit', () => {
+    vscode.commands.registerCommand('lambSource.submit', async () => {
+      const editor = vscode.window.activeTextEditor;
+      if(editor)await vscode.commands.executeCommand('type', { text: '\n' });
       if (LambSourcePanel.currentPanel) {
-        const editor = vscode.window.activeTextEditor;
-
         if (editor) {
           const documentText = editor.document.getText();
           LambSourcePanel.currentPanel.getFeedback(documentText);
@@ -162,25 +163,61 @@ class LambSourcePanel {
 
     const options = {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        "Accept": "audio/mpeg",
+        'Content-Type': 'application/json',
+        "xi-api-key": process.env.ELEVEN_LABS_API
+      },
       body: JSON.stringify({
         model_id: model_id,
-        test: result,
+        text: result,
         voice_settings: {
-          similarity_boost: 123,
-          stability: 123,
-          style: 123,
+          similarity_boost: 1,
+          stability: 1,
+          style: 1,
           use_speaker_boost: true
         }
       })
     };
-    
-    const audio = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice_id}`, options)
-    	.then(response => response.json())
-    	.then(response => console.log(response))
-    	.catch(err => console.error(err));
 
-    console.log(audio)
+    try {
+      const audio_stream = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice_id}/stream`, options)
+      
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  public playAudio(audioStream: Buffer) {
+    const panel = vscode.window.createWebviewPanel(
+        'audioPlayer', 
+        'Audio Player', 
+        vscode.ViewColumn.One, 
+        {}
+    );
+
+    // Assuming audioStream is the binary data of your audio
+    const blob = new Blob([audioStream], { type: 'audio/mp3' });
+    const url = URL.createObjectURL(blob);
+
+    panel.webview.html = this._getWebviewContent(url);
+}
+
+  private _getWebviewContent(audioUrl: string) {
+      return `<!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Audio Player</title>
+      </head>
+      <body>
+          <audio controls autoplay>
+              <source src="${audioUrl}" type="audio/mp3">
+              Your browser does not support the audio element.
+          </audio>
+      </body>
+      </html>`;
   }
 
   public dispose() {
