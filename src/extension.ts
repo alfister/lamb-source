@@ -155,11 +155,11 @@ class LambSourcePanel {
           content: documentText,
         }],
       model: 'gpt-3.5-turbo',
-    })
-    const result = response.choices[0].message.content
-    console.log(result)
-    const model_id = 'eleven_multilingual_v2'
-    const voice_id = '6VOIi9iZnh1UwYhl6DKD'
+    });
+    const result = response.choices[0].message.content;
+    console.log(result);
+    const model_id = 'eleven_multilingual_v2';
+    const voice_id = '6VOIi9iZnh1UwYhl6DKD';
 
     const options = {
       method: 'POST',
