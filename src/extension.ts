@@ -13,6 +13,24 @@ export function activate(context: vscode.ExtensionContext) {
 		})
 	);
 
+	context.subscriptions.push(
+		vscode.commands.registerCommand('lambSource.submit', () => {
+
+			if (LambSourcePanel.currentPanel) {
+				const editor = vscode.window.activeTextEditor;
+
+				if (editor) {
+					const document = editor.document;
+
+					// Get the document text
+					const documentText = document.getText();
+
+					// DO SOMETHING WITH `documentText`
+				}
+			}
+		})
+	);
+
 	if (vscode.window.registerWebviewPanelSerializer) {
 		// Make sure we register a serializer in activation event
 		vscode.window.registerWebviewPanelSerializer(LambSourcePanel.viewType, {
