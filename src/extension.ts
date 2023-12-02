@@ -20,12 +20,8 @@ export function activate(context: vscode.ExtensionContext) {
 				const editor = vscode.window.activeTextEditor;
 
 				if (editor) {
-					const document = editor.document;
-
-					// Get the document text
-					const documentText = document.getText();
-
-					// DO SOMETHING WITH `documentText`
+					const documentText = editor.document.getText();
+					LambSourcePanel.currentPanel.getFeedback(documentText);
 				}
 			}
 		})
@@ -97,7 +93,7 @@ class LambSourcePanel {
 		this._extensionUri = extensionUri;
 
 		// Set the webview's initial html content
-		this._update();
+		this._update('ramsay pleased');
 
 		// Listen for when the panel is disposed
 		// This happens when the user closes the panel or when the panel is closed programmatically
@@ -107,7 +103,7 @@ class LambSourcePanel {
 		this._panel.onDidChangeViewState(
 			e => {
 				if (this._panel.visible) {
-					this._update();
+					this._update('ramsay pleased');
 				}
 			},
 			null,
@@ -119,7 +115,18 @@ class LambSourcePanel {
 			message => {
 				switch (message.command) {
 					case 'alert':
-						vscode.window.showErrorMessage(message.text);
+						vscode.window.showInformationMessage(message.text);
+						return;
+					case 'pleased':
+						this._update('ramsay pleased');
+						return;
+					case 'annoyed':
+						this._update('ramsay annoyed');
+						return;
+					case 'angry':
+						this._update('ramsay angry');
+						return;
+					default:
 						return;
 				}
 			},
@@ -128,10 +135,9 @@ class LambSourcePanel {
 		);
 	}
 
-	public doRefactor() {
-		// Send a message to the webview webview.
-		// You can send any JSON serializable data.
-		this._panel.webview.postMessage({ command: 'refactor' });
+	public getFeedback(documentText: string) {
+		this._panel.webview.postMessage({ command: 'feedback' });
+		console.log(documentText);
 	}
 
 	public dispose() {
@@ -148,29 +154,16 @@ class LambSourcePanel {
 		}
 	}
 
-	private _update() {
+	private _update(faceName: keyof typeof faces) {
 		const webview = this._panel.webview;
 
 		// Vary the webview's content based on where it is located in the editor.
-		// We can vary the roaster here
-		switch (this._panel.viewColumn) {
-			case vscode.ViewColumn.Two:
-				this._updateForFace(webview, 'ramsay pleased');
-				return;
+		// We can also vary the roaster here
 
-			case vscode.ViewColumn.Three:
-				this._updateForFace(webview, 'ramsay annoyed');
-				return;
-
-			case vscode.ViewColumn.One:
-			default:
-				this._updateForFace(webview, 'ramsay angry');
-				return;
-		}
+		this._updateForFace(webview, faceName);
 	}
 
 	private _updateForFace(webview: vscode.Webview, faceName: keyof typeof faces) {
-		this._panel.title = faceName;
 		this._panel.webview.html = this._getHtmlForWebview(webview, faces[faceName]);
 	}
 
