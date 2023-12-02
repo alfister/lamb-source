@@ -19,6 +19,17 @@
 				"command": "lambSource.start",
 				"title": "Start roast session",
 				"category": "Lamb Source"
+			},
+			{
+				"command": "lambSource.submit",
+				"title": "Submit code to be roasted",
+				"category": "Lamb Source"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "lambSource.submit",
+				"key": "enter"
 			}
 		]
 	},
