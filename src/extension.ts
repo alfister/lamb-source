@@ -7,6 +7,7 @@ const faces = {
 };
 
 export function activate(context: vscode.ExtensionContext) {
+
 	context.subscriptions.push(
 		vscode.commands.registerCommand('lambSource.start', () => {
 			LambSourcePanel.createOrShow(context.extensionUri);
