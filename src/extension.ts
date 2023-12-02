@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import OpenAI from 'openai';
 require('dotenv').config();
-import fetch from 'node-fetch';
+import axios from 'axios'
 import { Blob } from 'node:buffer';
 
 const faces = {
@@ -145,7 +145,7 @@ class LambSourcePanel {
 
   public async getFeedback(documentText: string) {
     console.log(documentText);
-    const response = await openai.chat.completions.create({
+    const ai_response = await openai.chat.completions.create({
       messages: [
         { 
           role: 'system',
@@ -156,68 +156,39 @@ class LambSourcePanel {
         }],
       model: 'gpt-3.5-turbo',
     });
-    const result = response.choices[0].message.content;
+    const result = ai_response.choices[0].message.content;
     console.log(result);
     const model_id = 'eleven_multilingual_v2';
     const voice_id = '6VOIi9iZnh1UwYhl6DKD';
-
-    const options = {
-      method: 'POST',
-      headers: {
-        "Accept": "audio/mpeg",
-        'Content-Type': 'application/json',
-        "xi-api-key": process.env.ELEVEN_LABS_API
-      },
-      body: JSON.stringify({
-        model_id: model_id,
-        text: result,
-        voice_settings: {
-          similarity_boost: 1,
-          stability: 1,
-          style: 1,
-          use_speaker_boost: true
-        }
-      })
-    };
-
-    try {
-      const audio_stream = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice_id}/stream`, options)
-      
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  public playAudio(audioStream: Buffer) {
     const panel = vscode.window.createWebviewPanel(
-        'audioPlayer', 
-        'Audio Player', 
-        vscode.ViewColumn.One, 
-        {}
+      'audioPlayer', 
+      'Audio Player', 
+      vscode.ViewColumn.One, 
+      {}
     );
-
-    // Assuming audioStream is the binary data of your audio
-    const blob = new Blob([audioStream], { type: 'audio/mp3' });
-    const url = URL.createObjectURL(blob);
-
-    panel.webview.html = this._getWebviewContent(url);
-}
-
-  private _getWebviewContent(audioUrl: string) {
-      return `<!DOCTYPE html>
-      <html lang="en">
-      <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Audio Player</title>
-      </head>
-      <body>
-          <audio controls autoplay>
-              <source src="${audioUrl}" type="audio/mp3">
-              Your browser does not support the audio element.
-          </audio>
-      </body>
-      </html>`;
+    try {
+      const response = await axios({
+        method: "POST",
+        url: `https://api.elevenlabs.io/v1/text-to-speech/${voice_id}`,
+        data: {
+          text: result,
+          voice_settings: {
+            stability: 1,
+            similarity_boost: 1,
+            style: 1,
+            use_speaker_boost: true,
+          },
+          model_id: model_id,
+        },
+        headers: {
+          Accept: "audio/mpeg",
+          "xi-api-key": process.env.ELEVEN_LABS_API,
+          "Content-Type": "application/json",
+        },
+      })
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   public dispose() {
