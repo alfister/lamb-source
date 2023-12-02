@@ -52,13 +52,10 @@ class LambSourcePanel {
 	private _disposables: vscode.Disposable[] = [];
 
 	public static createOrShow(extensionUri: vscode.Uri) {
-		const column = vscode.window.activeTextEditor
-			? vscode.window.activeTextEditor.viewColumn
-			: undefined;
 
 		// If we already have a panel, show it.
 		if (LambSourcePanel.currentPanel) {
-			LambSourcePanel.currentPanel._panel.reveal(column);
+			LambSourcePanel.currentPanel._panel.reveal(vscode.ViewColumn.Two);
 			return;
 		}
 
@@ -66,7 +63,7 @@ class LambSourcePanel {
 		const panel = vscode.window.createWebviewPanel(
 			LambSourcePanel.viewType,
 			'Lamb Source',
-			column || vscode.ViewColumn.One,
+			vscode.ViewColumn.Beside,
 			getWebviewOptions(extensionUri),
 		);
 
