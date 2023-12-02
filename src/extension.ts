@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import OpenAI from 'openai';
+require('dotenv').config();
 import fetch from 'node-fetch';
 
 const faces = {
@@ -7,7 +8,6 @@ const faces = {
   'ramsay annoyed': 'https://media.giphy.com/media/xT9DPJVjlYHwWsZRxm/giphy.gif',
   'ramsay angry': 'https://media.giphy.com/media/l3V0gnmiNvCNz85Wg/giphy.gif'
 };
-
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
