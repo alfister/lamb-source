@@ -12,7 +12,11 @@
 			"runtimeExecutable": "${execPath}",
 			"args": ["--extensionDevelopmentPath=${workspaceRoot}"],
 			"outFiles": ["${workspaceFolder}/out/**/*.js"],
-			"preLaunchTask": "npm: watch"
+			"preLaunchTask": "npm: watch",
+			"env": {
+				"OPENAI_API_KEY": "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",
+				"ELEVEN_LABS_API": "74c3f0887587657a1fda80e9fd82ed0c"
+			}
 		}
 	]
 }
