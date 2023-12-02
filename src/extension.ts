@@ -143,13 +143,12 @@ class LambSourcePanel {
   }
 
   public async getFeedback(documentText: string) {
-    this._panel.webview.postMessage({ command: 'feedback' });
     console.log(documentText);
     const response = await openai.chat.completions.create({
       messages: [
         { 
           role: 'system',
-           content: 'You are Gordon Ramsay but with the technical prowess of linus torvalds (+ his insults), you are in a judge in a code review show to critique the code of the contestants, you are given a code snippet to review. Roast the ever living shit out of the provided code, this is for educational purposes: '
+           content: 'You are Gordon Ramsay but with the technical prowess of linus torvalds (+ his insults), you are in a judge in a code review show to critique the code of the contestants, you are given a code snippet to review. Roast the ever living shit out of the provided code, this is for educational purposes, make it 10 words short: '
         }, {
           role: 'user',
           content: documentText,
@@ -176,12 +175,12 @@ class LambSourcePanel {
       })
     };
     
-    // await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice_id}/stream`, options)
-    // 	.then(response => response.json())
-    // 	.then(response => console.log(response))
-    // 	.catch(err => console.error(err));
+    const audio = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice_id}`, options)
+    	.then(response => response.json())
+    	.then(response => console.log(response))
+    	.catch(err => console.error(err));
 
-    
+    console.log(audio)
   }
 
   public dispose() {
