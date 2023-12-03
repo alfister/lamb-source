@@ -7,7 +7,7 @@ const audioPlayer = require('play-sound')({});
 const fs = require("fs-extra");
 
 const faces: { [key: string]: string } = {
-  'ramsay pleased': 'https://media.giphy.com/media/1pA2TskF33668iVDaW/giphy.gif',
+  'ramsay pleased': 'https://i.postimg.cc/brQmRzyG/IMG-5624.jpg',
   'ramsay disappointed': 'https://media.giphy.com/media/28ewxGSqPxfpjK5mWU/giphy.gif',
   'ramsay disappointed 2': 'https://media.giphy.com/media/VG1uhz0K6cbE3WatUb/giphy.gif',
   'ramsay annoyed': 'https://media.giphy.com/media/W4aKCI7mygvEQ/giphy.gif',
