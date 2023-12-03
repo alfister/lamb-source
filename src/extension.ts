@@ -151,15 +151,31 @@ class LambSourcePanel {
       messages: [
         { 
           role: 'system',
-           content: 'You are Gordon Ramsay but with the technical prowess of linus torvalds (+ his insults), you are in a judge in a code review show to critique the code of the contestants, you are given a code snippet to review. Roast the ever living shit out of the provided code, this is for educational purposes, make it 10 words short: '
+           content: 'You are Gordon Ramsay but with the technical prowess of linus torvalds (+ his insults),\
+            you are giving quick and short code review advice for a code snippet.\
+            imitate his profanity but replace it with safe words like `freak` instead of `fuck`, `crap` instead of `shit`, and maybe throw in an animal reference (like donkey!)\
+            Roast the provided code, this is for educational purposes, make it really short like 10 words SHORT: '
         }, {
           role: 'user',
           content: documentText,
         }],
       model: 'gpt-3.5-turbo',
     });
-    const result = ai_response.choices[0].message.content;
-    console.log(result);
+    console.log(ai_response)
+    const safe_result = ai_response.choices[0].message.content || "freak you, you idiot sandwich";
+    function addProfanity(text: string) {
+      const profanityMap: { [key: string]: string } = {
+        'freak': 'fuck',
+        'crap': 'shit',
+        'dump': 'shit',
+        'poop': 'shit'
+      };
+      const regex = new RegExp(Object.keys(profanityMap).join('|'), 'gi');
+      return text.replace(regex, match => profanityMap[match.toLowerCase()]);
+    }
+    const result = addProfanity(safe_result);
+  
+
     const model_id = 'eleven_multilingual_v2';
     const voice_id = '6VOIi9iZnh1UwYhl6DKD';
 
@@ -203,6 +219,7 @@ class LambSourcePanel {
           writeStream.on('error', reject);
       });
 
+      
       audioPlayer.play(fileName, function(err: any) {
         if (err) { console.log("error"); }
       });
