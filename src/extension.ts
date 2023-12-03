@@ -5,6 +5,7 @@ require('dotenv').config();
 import axios from 'axios';
 const audioPlayer = require('play-sound')({});
 const fs = require("fs-extra");
+import { Blob } from 'buffer';
 
 const faces: { [key: string]: string } = {
   'ramsay pleased': 'https://media.giphy.com/media/1pA2TskF33668iVDaW/giphy.gif',
@@ -169,8 +170,19 @@ class LambSourcePanel {
         }],
       model: 'gpt-3.5-turbo',
     });
-    const {text: result, sentiment} = JSON.parse(ai_response.choices[0].message.content || "{}");
-    console.log(sentiment, result);
+    const {text: ai_result, sentiment} = JSON.parse(ai_response.choices[0].message.content || "{'text':'freak you, you idiot sandwich', 'sentiment': 3}");
+    console.log(sentiment, ai_result);
+    function addProfanity(text: string) {
+      const profanityMap: { [key: string]: string } = {
+        'freak': 'fuck',
+        'crap': 'shit',
+        'dump': 'shit',
+        'poop': 'shit'
+      };
+      const regex = new RegExp(Object.keys(profanityMap).join('|'), 'gi');
+      return text.replace(regex, match => profanityMap[match.toLowerCase()]);
+    }
+    const result = addProfanity(ai_result);
     const model_id = 'eleven_multilingual_v2';
     const voice_id = '6VOIi9iZnh1UwYhl6DKD';
 
@@ -210,7 +222,6 @@ class LambSourcePanel {
               fileName: fileName
           };
           writeStream.on('finish', () => resolve(responseJson));
-
           writeStream.on('error', reject);
       });
 
@@ -251,7 +262,12 @@ class LambSourcePanel {
     this._panel.webview.html = this._getHtmlForWebview(webview, faces[faceName]);
   }
 
-  private _getHtmlForWebview(webview: vscode.Webview, facePath: string) {
+  // private _updateForAudio(audioUrl: string) {
+  //   const webview = this._panel.webview;
+  //   this._panel.webview.html = this._getHtmlForWebview(webview, faces['ramsay angry'], audioUrl);
+  // }
+
+  private _getHtmlForWebview(webview: vscode.Webview, facePath: string, audioUrl: string | null = null) {
     // Local path to main script run in the webview
     const scriptPathOnDisk = vscode.Uri.joinPath(this._extensionUri, 'media', 'main.js');
 
@@ -278,8 +294,7 @@ class LambSourcePanel {
           Use a content security policy to only allow loading images from https or from our extension directory,
           and only allow scripts that have a specific nonce.
         -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
-
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}'; media-src blob:;">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <link href="${stylesResetUri}" rel="stylesheet">
