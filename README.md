@@ -2,10 +2,6 @@
 
 Based on VS Code's [webview sample](https://github.com/Microsoft/vscode-extension-samples/webview-sample)
 
-## Demo
-
-![demo](demo.gif)
-
 ## Running the extension
 
 - Open this example in VS Code 1.47+
