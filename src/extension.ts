@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import OpenAI from 'openai';
 require('dotenv').config();
 import axios from 'axios'
-import { Blob } from 'node:buffer';
 
 const faces = {
   'ramsay pleased': 'https://media.giphy.com/media/1pA2TskF33668iVDaW/giphy.gif',
@@ -190,6 +189,7 @@ class LambSourcePanel {
     } catch (error) {
       console.log(error);
     }
+    this._update("ramsay annoyed")
   }
 
   public dispose() {
