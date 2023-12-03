@@ -228,6 +228,9 @@ class LambSourcePanel {
       audioPlayer.play(fileName, function(err: any) {
         if (err) { console.log("error"); }
       });
+      // sleep 10s
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      this._update('ramsay pleased');
 
     } catch (error) {
       console.log(error);
