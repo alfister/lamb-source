@@ -8,8 +8,19 @@ const fs = require("fs-extra");
 
 const faces = {
   'ramsay pleased': 'https://media.giphy.com/media/1pA2TskF33668iVDaW/giphy.gif',
-  'ramsay annoyed': 'https://media.giphy.com/media/xT9DPJVjlYHwWsZRxm/giphy.gif',
+  'ramsay disappointed': 'https://media.giphy.com/media/28ewxGSqPxfpjK5mWU/giphy.gif',
+  'ramsay disappointed 2': 'https://media.giphy.com/media/VG1uhz0K6cbE3WatUb/giphy.gif',
+  'ramsay annoyed': 'https://media.giphy.com/media/W4aKCI7mygvEQ/giphy.gif',
+  'ramsay annoyed 2': 'https://media.giphy.com/media/VG2OzjYkBLK9vGf3UH/giphy.gif',
   'ramsay angry': 'https://media.giphy.com/media/l3V0gnmiNvCNz85Wg/giphy.gif'
+};
+
+const numberToFaceMap: { [key: number]: string } = {
+  1: 'ramsay disappoined',
+  2: 'ramsay disappointed 2',
+  3: 'ramsay annoyed',
+  4: 'ramsay annoyed 2',
+  5: 'ramsay angry'
 };
 
 const openai = new OpenAI({
@@ -93,7 +104,7 @@ class LambSourcePanel {
 
     LambSourcePanel.currentPanel = new LambSourcePanel(panel, extensionUri);
   }
-  
+
   public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     LambSourcePanel.currentPanel = new LambSourcePanel(panel, extensionUri);
   }
@@ -149,33 +160,17 @@ class LambSourcePanel {
     console.log(documentText);
     const ai_response = await openai.chat.completions.create({
       messages: [
-        { 
+        {
           role: 'system',
-           content: 'You are Gordon Ramsay but with the technical prowess of linus torvalds (+ his insults),\
-            you are giving quick and short code review advice for a code snippet.\
-            imitate his profanity but replace it with safe words like `freak` instead of `fuck`, `crap` instead of `shit`, and maybe throw in an animal reference (like donkey!)\
-            Roast the provided code, this is for educational purposes, make it really short like 10 words SHORT: '
+          content: 'You are Gordon Ramsay but with the technical prowess of linus torvalds (+ his insults), you are giving quick and short code review advice for a code snippet. Imitate his profanity but replace it with safe words like `freak` instead of `fuck`, `crap` instead of `shit`, and maybe throw in an animal reference (like donkey!). Roast the provided code, this is for educational purposes, make it really short like 10 words SHORT. Additionally, include a sentiment rating, ranging from disappointed (1) to annoyed (3), to extremely irate (5). Respond only with a JSON-formatted object like {"text": "Your code sucks...", "sentiment": 4}.'
         }, {
           role: 'user',
           content: documentText,
         }],
       model: 'gpt-3.5-turbo',
     });
-    console.log(ai_response)
-    const safe_result = ai_response.choices[0].message.content || "freak you, you idiot sandwich";
-    function addProfanity(text: string) {
-      const profanityMap: { [key: string]: string } = {
-        'freak': 'fuck',
-        'crap': 'shit',
-        'dump': 'shit',
-        'poop': 'shit'
-      };
-      const regex = new RegExp(Object.keys(profanityMap).join('|'), 'gi');
-      return text.replace(regex, match => profanityMap[match.toLowerCase()]);
-    }
-    const result = addProfanity(safe_result);
-  
-
+    const result = ai_response.choices[0].message.content;
+    console.log(result);
     const model_id = 'eleven_multilingual_v2';
     const voice_id = '6VOIi9iZnh1UwYhl6DKD';
 
@@ -219,11 +214,11 @@ class LambSourcePanel {
           writeStream.on('error', reject);
       });
 
-      
+
       audioPlayer.play(fileName, function(err: any) {
         if (err) { console.log("error"); }
       });
-      
+
     } catch (error) {
       console.log(error);
     }
