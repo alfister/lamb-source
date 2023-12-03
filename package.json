@@ -53,7 +53,9 @@
   "dependencies": {
     "axios": "^1.6.2",
     "dotenv": "^16.3.1",
+    "fs-extra": "^11.2.0",
     "openai": "^4.20.1",
+    "play-sound": "^1.1.6",
     "ws": "^8.14.2"
   }
 }
