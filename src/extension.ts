@@ -6,7 +6,7 @@ import axios from 'axios';
 const audioPlayer = require('play-sound')({});
 const fs = require("fs-extra");
 
-const faces = {
+const faces: { [key: string]: string } = {
   'ramsay pleased': 'https://media.giphy.com/media/1pA2TskF33668iVDaW/giphy.gif',
   'ramsay disappointed': 'https://media.giphy.com/media/28ewxGSqPxfpjK5mWU/giphy.gif',
   'ramsay disappointed 2': 'https://media.giphy.com/media/VG1uhz0K6cbE3WatUb/giphy.gif',
@@ -169,12 +169,12 @@ class LambSourcePanel {
         }],
       model: 'gpt-3.5-turbo',
     });
-    const result = ai_response.choices[0].message.content;
-    console.log(result);
+    const {text: result, sentiment} = JSON.parse(ai_response.choices[0].message.content || "{}");
+    console.log(sentiment, result);
     const model_id = 'eleven_multilingual_v2';
     const voice_id = '6VOIi9iZnh1UwYhl6DKD';
 
-    this._update("ramsay angry")
+    this._update(numberToFaceMap[sentiment])
     try {
       const response = await axios({
         method: "POST",
@@ -222,7 +222,6 @@ class LambSourcePanel {
     } catch (error) {
       console.log(error);
     }
-    this._update("ramsay annoyed")
   }
 
   public dispose() {
