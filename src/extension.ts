@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import * as vscode from 'vscode';
 import OpenAI from 'openai';
 require('dotenv').config();
-import axios from 'axios'
+import axios from 'axios';
+const audioPlayer = require('play-sound')({});
+const fs = require("fs-extra");
 
 const faces = {
   'ramsay pleased': 'https://media.giphy.com/media/1pA2TskF33668iVDaW/giphy.gif',
@@ -159,12 +162,7 @@ class LambSourcePanel {
     console.log(result);
     const model_id = 'eleven_multilingual_v2';
     const voice_id = '6VOIi9iZnh1UwYhl6DKD';
-    const panel = vscode.window.createWebviewPanel(
-      'audioPlayer', 
-      'Audio Player', 
-      vscode.ViewColumn.One, 
-      {}
-    );
+
     this._update("ramsay angry")
     try {
       const response = await axios({
@@ -185,7 +183,30 @@ class LambSourcePanel {
           "xi-api-key": process.env.ELEVEN_LABS_API,
           "Content-Type": "application/json",
         },
-      })
+        responseType: "stream"
+      });
+
+      const fileName = "/tmp/audioFile.mp3";
+
+      response.data.pipe(fs.createWriteStream(fileName));
+
+      const writeStream = fs.createWriteStream(fileName);
+      response.data.pipe(writeStream);
+
+      const fileOk = await new Promise((resolve, reject) => {
+          const responseJson = {
+              status: "ok",
+              fileName: fileName
+          };
+          writeStream.on('finish', () => resolve(responseJson));
+
+          writeStream.on('error', reject);
+      });
+
+      audioPlayer.play(fileName, function(err: any) {
+        if (err) { console.log("error"); }
+      });
+      
     } catch (error) {
       console.log(error);
     }
