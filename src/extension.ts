@@ -186,7 +186,6 @@ class LambSourcePanel {
     const model_id = 'eleven_multilingual_v2';
     const voice_id = '6VOIi9iZnh1UwYhl6DKD';
 
-    this._update(numberToFaceMap[sentiment]);
     try {
       const response = await axios({
         method: "POST",
@@ -225,7 +224,7 @@ class LambSourcePanel {
           writeStream.on('error', reject);
       });
 
-
+      this._update(numberToFaceMap[sentiment]);
       audioPlayer.play(fileName, function(err: any) {
         if (err) { console.log("error"); }
       });
