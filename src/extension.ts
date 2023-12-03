@@ -166,6 +166,7 @@ class LambSourcePanel {
       vscode.ViewColumn.One, 
       {}
     );
+    this._update("ramsay angry")
     try {
       const response = await axios({
         method: "POST",
