@@ -29,7 +29,7 @@
     "keybindings": [
       {
         "command": "lambSource.submit",
-        "key": "enter",
+        "key": "cmd+enter",
         "when": "editorTextFocus"
       }
     ]
