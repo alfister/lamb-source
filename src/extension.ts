@@ -256,8 +256,6 @@ class LambSourcePanel {
       </head>
       <body>
         <img src="${facePath}" width="300" />
-        <h1 id="lines-of-code-counter">0</h1>
-
         <script nonce="${nonce}" src="${scriptUri}"></script>
       </body>
       </html>`;
