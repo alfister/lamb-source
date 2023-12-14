@@ -4,4 +4,3 @@
 .env.local
 *.local
 .env
-.vscode/**/*
